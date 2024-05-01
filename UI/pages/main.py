@@ -3,110 +3,216 @@
 #                     ZZS                       #
 #                     SBR                       #
 #################################################
-from flet import *
-import matplotlib.pyplot as plt
-from flet.matplotlib_chart import MatplotlibChart
+import flet as ft
 from flet_navigator import PageData
-from UI.sidebar import SideBar
-from modules.utilites import get_data_main_page
+from modules.CRUD import CRUD
+############static variables#####################
+
 #################################################
 
 
-class Diagram(UserControl):
-    def __init__(self, diagram_data):
-        super().__init__()
-        self.__content = {1: ['База услуг', 'КСГ', 'МКБ', 'Услуги'], 2: ['Справочники', 'Регионы', 'Области', 'Мед. профили'], 3: ['Пользователи', 'Админы', 'Кураторы', 'Модераторы', 'Пользователи']}
-        self.__diagram_data = diagram_data
+class MainPage:
+    def __init__(self, db):
+        super(MainPage, self).__init__()
+        self.__bs = None
+        self.__table = None
+        self.__crud = CRUD(db)
+        self.__comment_place = ft.TextField(label="Напишите комментарий")
+        self.__filter_fields = [
+                            ft.TextField(label='Адрес'),
+                            ft.TextField(label='Площадь'),
+                            ft.TextField(label='Цена'),
+                            ft.TextField(label='Этаж')
+                        ]
 
-    def add_diagram(self, cont, data):
-        fig, ax = plt.subplots()
-        plt.style.use('dark_background')
-        fruits = [self.__content[cont][1], self.__content[cont][2], self.__content[cont][3]]
-        counts = [data[0], data[1], data[2]]
-        bar_colors = ["tab:red", "tab:blue", "tab:orange"]
-        if cont == 3:
-            fruits.append(self.__content[cont][4])
-            counts.append(data[3])
-            bar_colors.append('tab:green')
-        ax.bar(fruits, counts, color=bar_colors)
-        ax.set_title(self.__content[cont][0])
-        return fig
+    def main_page(self, pg: PageData):
+        def send_msg(e):
+            # Записываем комментарий
+            self.__crud.add_comment_by_id(e.control.tooltip, self.__comment_place.value, pg.page.session.get("creds"))
+            close_comment(None)
 
-    def build(self):
-        return Container(
-            height=1500,
-            content=Row([
-                        Container(
-                            height=450,
-                            width=450,
-                            content=MatplotlibChart(self.add_diagram(1, [self.__diagram_data['ksg'],
-                                                                                   self.__diagram_data['mkb'],
-                                                                                   self.__diagram_data['service']])),
-                        ),
-                        Container(
-                            height=450,
-                            width=450,
-                            content=MatplotlibChart(self.add_diagram(2, [self.__diagram_data['region'],
-                                                                                   self.__diagram_data['area'],
-                                                                                   self.__diagram_data['med_profile']])),
-                        ),
-                        Container(
-                            height=450,
-                            width=450,
-                            content=MatplotlibChart(self.add_diagram(3, [self.__diagram_data['users'][0],
-                                                                                   self.__diagram_data['users'][1],
-                                                                                   self.__diagram_data['users'][2],
-                                                                                   self.__diagram_data['users'][3]])),
-                        ),
-                        ],
-                        expand=True,
-                        vertical_alignment=CrossAxisAlignment.START,
-                        alignment=MainAxisAlignment.SPACE_AROUND,
+        def studio_btns(e):
+            pg.page.session.set('rooms', e.control.text)
+
+        def author(e):
+            pg.page.session.set('seller', e.control.text)
+
+        def close_dlg(e):
+            inputs = ['rooms', 'seller'] + self.__filter_fields
+            restriction = list()
+            for index, input in enumerate(inputs):
+                if index in [0, 1]:
+                    if pg.page.session.contains_key(input):
+                        if pg.page.session.get(input) != 'не выбрано':
+                            restriction.append(pg.page.session.get(input))
+                        else:
+                            restriction.append(False)
+                    else:
+                        restriction.append(False)
+                    dlg_modal.open = False
+                else:
+                    if len(input.value) > 0:
+                        if index in [3, 4, 5]:
+                            try:
+                                restriction.append(int(input.value))
+                            except:
+                                restriction.append(False)
+                                input.value = 'Ошибка! Не числовой формат'
+                        else:
+                            restriction.append(input.value)
+                    else:
+                        restriction.append(False)
+            self.__table.rows.clear()
+            load_table_info(True, restriction)
+            pg.page.update()
+
+        def load_table_info(flag, restrictions=None):
+            if not flag:
+                data = self.__crud.get_basic_query()
+            else:
+                data = self.__crud.get_restricted_query(restrictions)
+            for row in data:
+                self.__table.rows.append(ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(row[2])),
+                        ft.DataCell(ft.Text(row[3])),
+                        ft.DataCell(ft.Text(row[4])),
+                        ft.DataCell(ft.Text(row[5])),
+                        ft.DataCell(ft.Text(row[6])),
+                        ft.DataCell(ft.Text(row[7])),
+                        ft.DataCell(ft.Text(value=row[8])),
+                        ft.DataCell(ft.IconButton(icon='COMMENT', tooltip=row[0], on_click=load_comments)),
+                    ],
+                ),
+                )
+
+        def load_comments(e):
+            insert_comments(e.control.tooltip)
+            pg.page.dialog = self.__bs
+            self.__bs.open = True
+            pg.page.update()
+
+        def close_comment(e):
+            self.__bs.open = False
+            pg.page.update()
+
+        def insert_comments(row_id):
+            cart = list()
+            cart.append(ft.Row([ft.Text("Комментарии                                                 ", size=24),
+                                    ft.FilledButton(text="Закрыть", icon="CLOSE", on_click=close_comment)]))
+            for i in self.__crud.get_comments_by_id(row_id):
+                cart.append(ft.Text(i, size=16))
+            cart.append(self.__comment_place)
+            cart.append(ft.OutlinedButton(text="Отправить", icon="SEND", on_click=send_msg, tooltip=row_id))
+            self.__bs = ft.BottomSheet(
+                ft.Container(
+                    ft.Column(
+                        cart,
+                        tight=True,
                     ),
+                    padding=10,
+                    border_radius=1,
+                ),
+                open=False,
+            )
+
+        def open_dlg_modal(e):
+            pg.page.dialog = dlg_modal
+            dlg_modal.open = True
+            pg.page.update()
+
+
+        dlg_modal = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Фильтр"),
+            content=ft.Column(
+                [
+                    ft.Column(
+                        [
+                            ft.Row(
+                                [
+                                    ft.Text(value='Комнаты:', size=12),
+                                    ft.FilledButton(text='не выбрано', on_click=studio_btns),
+                                    ft.FilledButton(text='Студия', on_click=studio_btns),
+                                    ft.FilledButton(text="1", on_click=studio_btns),
+                                    ft.FilledButton(text="2", on_click=studio_btns),
+                                    ft.FilledButton(text="3", on_click=studio_btns),
+                                    ft.FilledButton(text="4+", on_click=studio_btns)
+                                ]
+                            ),
+                            ft.Row([
+                                ft.Text(value='Автор', size=12),
+                                ft.FilledButton(text="Частное лицо", on_click=author),
+                                ft.FilledButton(text="Риелтор", on_click=author)
+                            ])
+                        ]
+                    ),
+                    ft.Column(
+                        self.__filter_fields
+                    )
+                ]
+            ),
+            actions=[
+                ft.TextButton("Подтвердить", on_click=close_dlg),
+            ],
         )
 
+        pg.page.title = "Главная страница"
+        pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
 
-class Main:
-    def __init__(self, vault, config, db):
-        super(Main, self).__init__()
-        self.__vault = vault
-        self.__config = config
-        self.__db = db
+        logo_text = ft.Text(value='RealtorParser',
+                            text_align=ft.TextAlign.LEFT, size=36, color='black')
+        parser_button = ft.FilledButton(text='Парсер', width=139, height=32)
+        analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=280, height=32)
 
-    def main(self, pg: PageData):
-        pg.page.title = "Главное меню"
-        pg.page.theme_mode = 'dark'
-        pg.page.horizontal_alignment = "stretch"
-        pg.page.vertical_alignment = "stretch"
+        home_button = ft.FilledButton(text='Квартиры')
+        home_arenda_button = ft.FilledButton(text='Квартиры (сдать)')
+        home_city_button = ft.FilledButton(text='Загородная недвижимость')
+
+        filter_button = ft.FilledButton(text='Фильтр', icon="SETTINGS", on_click=open_dlg_modal)
+
+        self.__table = ft.DataTable(
+            border=ft.border.all(2, "white"),
+            border_radius=10,
+            vertical_lines=ft.border.BorderSide(1, "black"),
+            horizontal_lines=ft.border.BorderSide(1, "black"),
+            columns=[
+                ft.DataColumn(ft.Text("Адрес")),
+                ft.DataColumn(ft.Text("Этаж"), numeric=True),
+                ft.DataColumn(ft.Text("Площадь"), numeric=True),
+                ft.DataColumn(ft.Text("Комнаты"), numeric=True),
+                ft.DataColumn(ft.Text("Цена"), numeric=True),
+                ft.DataColumn(ft.Text("Опубликован")),
+                ft.DataColumn(ft.Text("Сайт")),
+                ft.DataColumn(ft.Text("")),
+            ]
+        )
+        load_table_info(False)
         pg.page.add(
-            Row(
-                [
-                Container(
-                    border_radius=10,
-                    content=SideBar(self.__vault, pg),
-                    shadow=BoxShadow(
-                        spread_radius=1,
-                        blur_radius=15,
-                        color=colors.BLUE_GREY_300,
-                        offset=Offset(0, 0),
-                        blur_style=ShadowBlurStyle.OUTER,
-                    )
+            ft.Row([
+                ft.Row([
+                    logo_text,
+                ],
                 ),
-                Container(
-                    border_radius=10,
-                    expand=True,
-                    content=Diagram(get_data_main_page(self.__db)),
-                    shadow=BoxShadow(
-                        spread_radius=1,
-                        blur_radius=15,
-                        color=colors.BLUE_GREY_300,
-                        offset=Offset(0, 0),
-                        blur_style=ShadowBlurStyle.OUTER,
-                    )
+                ft.Row([
+                    parser_button,
+                    analys_button
+                ],
                 ),
             ],
-                expand=True,
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            ),
+            ft.Row([
+                home_button, home_arenda_button, home_city_button
+            ],
+            ),
+            ft.Row([
+                filter_button,
+            ],
+            ),
+            ft.Row([
+                self.__table,
+            ],
+                alignment=ft.MainAxisAlignment.CENTER,
             )
         )
-        pg.page.update()
-        plt.close()

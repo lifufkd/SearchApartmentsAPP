@@ -5,15 +5,16 @@
 #################################################
 import sqlite3
 import os
+from threading import Lock
 ############static variables#####################
 
 #################################################
 
 
 class DB:
-    def __init__(self, path, lock):
+    def __init__(self, path):
         super(DB, self).__init__()
-        self.__lock = lock
+        self.__lock = Lock()
         self.__db_path = path
         self.__cursor = None
         self.__db = None
@@ -26,18 +27,25 @@ class DB:
             self.__cursor.execute('''
             CREATE TABLE users(
             row_id INTEGER primary key autoincrement not null,
-            user_id INTEGER,
-            first_name TEXT,
-            last_name TEXT,
-            nick_name TEXT,
-            is_admin BOOL,
-            exp_date INTEGER,
-            notes_count INTEGER,
-            subscription_type INTEGER,
-            notion_settings TEXT,
-            notion_token TEXT,
-            db_info TEXT,
-            UNIQUE(user_id)
+            name TEXT,
+            lastname TEXT,
+            email TEXT,
+            login TEXT,
+            password TEXT
+            )
+            ''')
+            self.__cursor.execute('''
+            CREATE TABLE appartaments(
+            row_id INTEGER primary key autoincrement not null,
+            link TEXT,
+            address TEXT,
+            floor TEXT,
+            square TEXT,
+            rooms TEXT,
+            price TEXT,
+            date TEXT,
+            source TEXT,
+            comments TEXT
             )
             ''')
             self.__db.commit()
@@ -46,19 +54,11 @@ class DB:
             self.__cursor = self.__db.cursor()
 
     def db_write(self, queri, args):
-        self.set_lock()
-        self.__cursor.execute(queri, args)
-        self.__db.commit()
-        self.realise_lock()
+        with self.__lock:
+            self.__cursor.execute(queri, args)
+            self.__db.commit()
 
     def db_read(self, queri, args):
-        self.set_lock()
-        self.__cursor.execute(queri, args)
-        self.realise_lock()
-        return self.__cursor.fetchall()
-
-    def set_lock(self):
-        self.__lock.acquire(True)
-
-    def realise_lock(self):
-        self.__lock.release()
+        with self.__lock:
+            self.__cursor.execute(queri, args)
+            return self.__cursor.fetchall()
