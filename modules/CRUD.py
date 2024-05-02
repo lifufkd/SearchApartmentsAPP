@@ -17,7 +17,7 @@ class CRUD:
 
     def add_apartment(self, data):
         print(data)
-        self.__db.db_write(f'INSERT INTO appartaments (link, address, floor, square, rooms, price, date, source, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, {json.dumps([])})', data)
+        self.__db.db_write(f'INSERT INTO appartaments (link, address, floor, square, rooms, price, date, source, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "{json.dumps([])}")', data)
 
     def get_existed_apartment(self, url):
         data = self.__db.db_read('SELECT COUNT(*) FROM appartaments WHERE link = ?', (url, ))[0][0]
@@ -91,6 +91,6 @@ class CRUD:
 
     def add_comment_by_id(self, row_id, comment, creds):
         data = self.get_comments_by_id(row_id)
-        user_data = self.__db.db_read('SELECT name, lastname FROM users WHERE login = ? AND password = ?', creds)[0]
+        user_data = self.__db.db_read(f'SELECT name, lastname FROM users WHERE login = "{creds[0]}" AND password = "{creds[1]}"', ())[0]
         data.append(f'{user_data[0]} {user_data[1]} > {comment}')
         self.__db.db_write('UPDATE appartaments SET comments = ? WHERE row_id = ?', (json.dumps(data), row_id))
