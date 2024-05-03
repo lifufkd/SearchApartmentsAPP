@@ -22,6 +22,7 @@ class Registration:
             # Проверям наличие логина\пароля в БД
             if not self.__crud.check_login(login_field.value, pass_field.value):
                 self.__crud.add_user([name_field.value, sur_name_field.value, email_field.value, login_field.value, pass_field.value])
+                pg.page.session.set('creds', [login_field.value, pass_field.value])
                 pg.navigator.navigate('main', pg.page)
             else:
                 open_dlg_modal(None)
