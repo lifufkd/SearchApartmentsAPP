@@ -37,6 +37,9 @@ class MainPage:
         def author(e):
             pg.page.session.set('seller', e.control.text)
 
+        def analyse_function(e):
+            pg.navigator.navigate('analyse', pg.page)
+
         def close_dlg(e):
             inputs = ['rooms', 'seller'] + self.__filter_fields
             restriction = list()
@@ -164,12 +167,11 @@ class MainPage:
         logo_text = ft.Text(value='RealtorParser',
                             text_align=ft.TextAlign.LEFT, size=36, color='black')
         parser_button = ft.FilledButton(text='Парсер', width=139, height=32)
-        analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=280, height=32)
+        analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=280, height=32, on_click=analyse_function)
 
         home_button = ft.FilledButton(text='Квартиры')
         home_arenda_button = ft.FilledButton(text='Квартиры (сдать)')
         home_city_button = ft.FilledButton(text='Загородная недвижимость')
-
         filter_button = ft.FilledButton(text='Фильтр', icon="SETTINGS", on_click=open_dlg_modal)
 
         self.__table = ft.DataTable(
