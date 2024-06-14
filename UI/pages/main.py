@@ -159,6 +159,7 @@ class MainPage:
 
         pg.page.title = "Главная страница"
         pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
+        pg.page.scroll = 'always'
 
         logo_text = ft.Text(value='RealtorParser',
                             text_align=ft.TextAlign.LEFT, size=36, color='black')
@@ -213,6 +214,7 @@ class MainPage:
             ft.Row([
                 self.__table,
             ],
-                alignment=ft.MainAxisAlignment.CENTER,
+                scroll="always",
+                alignment=ft.MainAxisAlignment.CENTER
             )
         )
