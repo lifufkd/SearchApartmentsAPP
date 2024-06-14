@@ -40,6 +40,9 @@ class MainPage:
         def analyse_function(e):
             pg.navigator.navigate('analyse', pg.page)
 
+        def mainpage(e):
+            pg.navigator.navigate('main', pg.page)
+
         def close_dlg(e):
             inputs = ['rooms', 'seller'] + self.__filter_fields
             restriction = list()
@@ -166,7 +169,7 @@ class MainPage:
 
         logo_text = ft.Text(value='RealtorParser',
                             text_align=ft.TextAlign.LEFT, size=36, color='black')
-        parser_button = ft.FilledButton(text='Парсер', width=139, height=32)
+        parser_button = ft.FilledButton(text='Главная страница', width=170, height=32, on_click=mainpage)
         analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=280, height=32, on_click=analyse_function)
 
         home_button = ft.FilledButton(text='Квартиры')
