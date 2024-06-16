@@ -86,7 +86,7 @@ class MainPage:
                         ft.DataCell(ft.Text(row[5])),
                         ft.DataCell(ft.Text(row[6])),
                         ft.DataCell(ft.Text(row[7])),
-                        ft.DataCell(ft.Text(value=row[8])),
+                        ft.DataCell(ft.TextButton(text=row[8], on_click=go_to_site)),
                         ft.DataCell(ft.IconButton(icon='COMMENT', tooltip=row[0], on_click=load_comments)),
                     ],
                 ),
@@ -101,6 +101,9 @@ class MainPage:
         def close_comment(e):
             self.__bs.open = False
             pg.page.update()
+
+        def go_to_site(e):
+            pg.page.launch_url('https://vk.com/feed')
 
         def insert_comments(row_id):
             cart = list()

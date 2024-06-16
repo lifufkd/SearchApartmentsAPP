@@ -26,6 +26,9 @@ class Analyse:
         def analyse_function(e):
             pg.navigator.navigate('analyse', pg.page)
 
+        def go_to_site(e):
+            pg.page.launch_url('https://vk.com/feed')
+
         ### LINECHART ###
 
         # LineChart here
@@ -43,7 +46,7 @@ class Analyse:
                         ft.DataCell(ft.Text(row[2])),
                         ft.DataCell(ft.Text(row[6])),
                         ft.DataCell(ft.Text(row[7])),
-                        ft.DataCell(ft.Text(value=row[8])),
+                        ft.DataCell(ft.TextButton(text=row[8], on_click=go_to_site)),
                     ],
                 ),
                 )
