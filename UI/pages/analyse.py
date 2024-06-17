@@ -27,7 +27,9 @@ class Analyse:
             pg.navigator.navigate('analyse', pg.page)
 
         def go_to_site(e):
-            pg.page.launch_url('https://vk.com/feed')
+            data = self.__crud.get_basic_query()
+            for row in data:
+                pg.page.launch_url(url=row[1])
 
         ### LINECHART ###
 
