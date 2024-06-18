@@ -6,6 +6,8 @@
 import flet as ft
 from flet_navigator import PageData
 from modules.CRUD import CRUD
+import matplotlib.pyplot as plt
+from flet.matplotlib_chart import MatplotlibChart
 ############static variables#####################
 
 #################################################
@@ -170,6 +172,8 @@ class MainPage:
 
         pg.page.title = "Главная страница"
         pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
+        pg.page.vertical_alignment = "center"
+        pg.page.horizontal_alignment = "center"
         pg.page.scroll = 'always'
 
         logo_text = ft.Text(value='RealtorParser',
@@ -226,5 +230,5 @@ class MainPage:
             ],
                 scroll="always",
                 alignment=ft.MainAxisAlignment.CENTER
-            )
+            ),
         )

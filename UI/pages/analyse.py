@@ -4,11 +4,10 @@
 #                     SBR                       #
 #################################################
 import flet as ft
+import time
 from flet_navigator import PageData
 from modules.CRUD import CRUD
 ############static variables#####################
-
-#################################################
 
 
 class Analyse:
@@ -26,14 +25,14 @@ class Analyse:
         def analyse_function(e):
             pg.navigator.navigate('analyse', pg.page)
 
-        def go_to_site(e):
-            data = self.__crud.get_basic_query()
-            for row in data:
-                pg.page.launch_url(url=row[1])
+        # def go_to_site(e):
+        #     data = self.__crud.get_basic_query()
+        #     for row in data:
+        #         pg.page.launch_url(url=row[1])
+
 
         ### LINECHART ###
 
-        # LineChart here
 
 
         ### TABLE ###
@@ -48,7 +47,7 @@ class Analyse:
                         ft.DataCell(ft.Text(row[2])),
                         ft.DataCell(ft.Text(row[6])),
                         ft.DataCell(ft.Text(row[7])),
-                        ft.DataCell(ft.TextButton(text=row[8], on_click=go_to_site)),
+                        ft.DataCell(ft.TextButton(text=row[8], on_click=lambda e:pg.page.launch_url(url=row[1]))),
                     ],
                 ),
                 )
@@ -77,8 +76,12 @@ class Analyse:
         parser_button = ft.FilledButton(text='Главная страница', width=170, height=32, on_click=mainpage)
         analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=280, height=32, on_click=analyse_function)
 
+
+        ### PAGE SETTINGS ###
         pg.page.title = "Анализ по агрегаторам"
         pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
+        pg.page.vertical_alignment = "center"
+        pg.page.horizontal_alignment = "center"
         pg.page.scroll = 'always'
 
         pg.page.add(
@@ -99,6 +102,6 @@ class Analyse:
                 self.__table,
             ],
                 scroll="always",
-                alignment=ft.MainAxisAlignment.CENTER
-            )
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
         )
