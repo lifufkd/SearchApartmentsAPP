@@ -47,11 +47,8 @@ class Registration:
         pg.page.title = "Страница регистрации"
         pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
 
-        logo_text = ft.Text(value='RealtorParser\n'
-                                  '\n'
-                                  '\n'
-                                  '\n'
-                                  '\n', text_align=ft.TextAlign.CENTER, size=36, color='black')
+        logo_text = ft.Text(value='RealtorParser',
+        text_align=ft.TextAlign.CENTER, size=36, color='black')
         name_page = ft.Text(value='Регистрация', text_align=ft.TextAlign.CENTER, size=32, color='black')
         name_text = ft.Text(value='Имя', text_align=ft.TextAlign.CENTER, size=20, color='black')
         name_field = ft.TextField(width=334, height=41, on_change=validate)

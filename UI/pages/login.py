@@ -43,11 +43,7 @@ class Login:
         pg.page.title = "Страница входа"
         pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
 
-        logo_text = ft.Text(value='RealtorParser\n'
-                                  '\n'
-                                  '\n'
-                                  '\n'
-                                  '\n', text_align=ft.TextAlign.CENTER, size=36, color='black')
+        logo_text = ft.Text(value='RealtorParser', text_align=ft.TextAlign.CENTER, size=36, color='black')
         name_page = ft.Text(value='Вход', text_align=ft.TextAlign.CENTER, size=32, color='black')
         login_text = ft.Text(value='Логин', text_align=ft.TextAlign.CENTER, size=20, color='black')
         user_login = ft.TextField(width=334, height=41)
