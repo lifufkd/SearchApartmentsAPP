@@ -88,7 +88,7 @@ class MainPage:
                         ft.DataCell(ft.Text(row[5])),
                         ft.DataCell(ft.Text(row[6])),
                         ft.DataCell(ft.Text(row[7])),
-                        ft.DataCell(ft.TextButton(text=row[8], on_click=go_to_site)),
+                        ft.DataCell(ft.TextButton(text=row[8], tooltip=row[1], on_click=go_to_site)),
                         ft.DataCell(ft.IconButton(icon='COMMENT', tooltip=row[0], on_click=load_comments)),
                     ],
                 ),
@@ -105,9 +105,10 @@ class MainPage:
             pg.page.update()
 
         def go_to_site(e):
-            data = self.__crud.get_basic_query()
-            for row in data:
-                pg.page.launch_url(url=row[1])
+            pg.page.launch_url(url=e.control.tooltip)
+
+        def filter_apartments(e):
+            pass
 
         def insert_comments(row_id):
             cart = list()
@@ -181,7 +182,7 @@ class MainPage:
         parser_button = ft.FilledButton(text='Главная страница', width=170, height=32, on_click=mainpage)
         analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=280, height=32, on_click=analyse_function)
 
-        home_button = ft.FilledButton(text='Квартиры')
+        home_button = ft.FilledButton(text='Квартиры', on_click=filter_apartments)
         home_arenda_button = ft.FilledButton(text='Квартиры (сдать)')
         home_city_button = ft.FilledButton(text='Загородная недвижимость')
         filter_button = ft.FilledButton(text='Фильтр', icon="SETTINGS", on_click=open_dlg_modal)
