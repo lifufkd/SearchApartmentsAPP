@@ -13,9 +13,9 @@ from flet.matplotlib_chart import MatplotlibChart
 #################################################
 
 
-class MainPage:
+class ApartamentsPass:
     def __init__(self, db):
-        super(MainPage, self).__init__()
+        super(ApartamentsPass, self).__init__()
         self.__bs = None
         self.__table = None
         self.__crud = CRUD(db)
@@ -27,7 +27,7 @@ class MainPage:
                             ft.TextField(label='Этаж')
                         ]
 
-    def main_page(self, pg: PageData):
+    def apartamentspass(self, pg: PageData):
         def send_msg(e):
             # Записываем комментарий
             self.__crud.add_comment_by_id(e.control.tooltip, self.__comment_place.value, pg.page.session.get("creds"))
@@ -41,13 +41,6 @@ class MainPage:
 
         def analyse_function(e):
             pg.navigator.navigate('analyse', pg.page)
-
-        def apartaments(e):
-            pg.navigator.navigate('apartaments', pg.page)
-        def apartaments_pass(e):
-            pg.navigator.navigate('apartaments_pass', pg.page)
-        def vacation_home(e):
-            pg.navigator.navigate('vacation_home', pg.page)
 
         def mainpage(e):
             pg.navigator.navigate('main', pg.page)
@@ -114,6 +107,12 @@ class MainPage:
         def go_to_site(e):
             pg.page.launch_url(url=e.control.tooltip)
 
+        def apartaments(e):
+            pg.navigator.navigate('apartaments', pg.page)
+        def apartaments_pass(e):
+            pg.navigator.navigate('apartaments_pass', pg.page)
+        def vacation_home(e):
+            pg.navigator.navigate('vacation_home', pg.page)
 
         def insert_comments(row_id):
             cart = list()
@@ -176,7 +175,7 @@ class MainPage:
             ],
         )
 
-        pg.page.title = "Главная страница"
+        pg.page.title = "Квартиры (сдать)"
         pg.page.bgcolor = "#828282"  # Установить белый цвет фона страницы
         pg.page.vertical_alignment = "center"
         pg.page.horizontal_alignment = "center"

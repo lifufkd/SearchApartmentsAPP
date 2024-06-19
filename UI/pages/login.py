@@ -57,7 +57,7 @@ class Login:
             title=ft.Text("Вы ввели неверные данные"),
             content=ft.Text("Повторите попытку"),
             actions=[
-                ft.TextButton("Ok", on_click=close_dlg),
+                ft.TextButton("Хорошо", on_click=close_dlg),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
