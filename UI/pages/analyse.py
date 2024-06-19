@@ -103,7 +103,7 @@ class Analyse:
             else:
                 data = self.__crud.get_restricted_query(restrictions)
             for row in data:
-                self.__chart.rows.append(ft.BarChartGroup(
+                self.__chart(ft.BarChartGroup(
                     x=row[0],
                     bar_rods=[
                         ft.BarChartRod(
@@ -148,6 +148,8 @@ class Analyse:
             expand=True,
             bgcolor=ft.colors.GREY_700
         )
+
+        load_chart_info(False)
 
         self.__chart2 = ft.BarChart(
             bar_groups=[
