@@ -4,59 +4,11 @@
 #                     SBR                       #
 #################################################
 import flet as ft
-import matplotlib.pyplot as plt
-from flet.matplotlib_chart import MatplotlibChart
 from flet_navigator import PageData
 from modules.CRUD import CRUD
 
 
 ############static variables#####################
-class Diagram(ft.UserControl):
-    def __init__(self, diagram_data):
-        super().__init__()
-        self.__content = {1: ['База услуг', 'КСГ', 'МКБ', 'Услуги'], 2: ['Справочники', 'Регионы', 'Области', 'Мед. профили']}
-        self.__diagram_data = diagram_data
-
-    def add_diagram(self, cont, data):
-        fig, ax = plt.subplots()
-        plt.style.use('dark_background')
-        fruits = [self.__content[cont][1], self.__content[cont][2], self.__content[cont][3]]
-        counts = [data[0], data[1], data[2]]
-        bar_colors = ["tab:red", "tab:blue", "tab:orange"]
-        if cont == 3:
-            fruits.append(self.__content[cont][4])
-            counts.append(data[3])
-            bar_colors.append('tab:green')
-        ax.bar(fruits, counts, color=bar_colors)
-        ax.set_title(self.__content[cont][0])
-        return fig
-
-    def build(self):
-        return ft.Container(
-            height=1500,
-            content=ft.Row([
-                        ft.Container(
-                            height=450,
-                            width=450,
-                            content=MatplotlibChart(self.add_diagram(1, [self.__diagram_data['ksg'],
-                                                                                   self.__diagram_data['mkb'],
-                                                                                   self.__diagram_data['service']])),
-                        ),
-                        ft.Container(
-                            height=450,
-                            width=450,
-                            content=MatplotlibChart(self.add_diagram(2, [self.__diagram_data['region'],
-                                                                                   self.__diagram_data['area'],
-                                                                                   self.__diagram_data['med_profile']])),
-                        ),
-                        ],
-                        expand=True,
-                        vertical_alignment=ft.CrossAxisAlignment.START,
-                        alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                    ),
-        )
-
-
 class Analyse:
     def __init__(self, db):
         super(Analyse, self).__init__()
@@ -74,10 +26,6 @@ class Analyse:
 
         def go_to_site(e):
             pg.page.launch_url(url=e.control.tooltip)
-
-        ### LINECHART ###
-
-            # linechart here
 
         ### TABLE ###
         def load_table_info(flag, restrictions=None):
@@ -110,6 +58,178 @@ class Analyse:
         )
         load_table_info(False)
 
+
+        ### CHART ###
+        chart = ft.BarChart(
+            bar_groups=[
+                ft.BarChartGroup(
+                    x=0,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=40,
+                            width=40,
+                            color=ft.colors.AMBER,
+                            tooltip="Apple",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+                ft.BarChartGroup(
+                    x=1,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=100,
+                            width=40,
+                            color=ft.colors.BLUE,
+                            tooltip="Blueberry",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+                ft.BarChartGroup(
+                    x=2,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=30,
+                            width=40,
+                            color=ft.colors.RED,
+                            tooltip="Cherry",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+                ft.BarChartGroup(
+                    x=3,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=60,
+                            width=40,
+                            color=ft.colors.ORANGE,
+                            tooltip="Orange",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+            ],
+            border=ft.border.all(1, ft.colors.BLACK),
+            left_axis=ft.ChartAxis(
+                labels_size=40, title=ft.Text("Цена Авито"), title_size=40
+            ),
+            bottom_axis=ft.ChartAxis(
+                labels=[
+                    ft.ChartAxisLabel(
+                        value=0, label=ft.Container(ft.Text("Apple"), padding=10)
+                    ),
+                    ft.ChartAxisLabel(
+                        value=1, label=ft.Container(ft.Text("Blueberry"), padding=10)
+                    ),
+                    ft.ChartAxisLabel(
+                        value=2, label=ft.Container(ft.Text("Cherry"), padding=10)
+                    ),
+                    ft.ChartAxisLabel(
+                        value=3, label=ft.Container(ft.Text("Orange"), padding=10)
+                    ),
+                ],
+                labels_size=40,
+            ),
+            horizontal_grid_lines=ft.ChartGridLines(
+                color=ft.colors.BLACK, width=1, dash_pattern=[3, 3]
+            ),
+            tooltip_bgcolor=ft.colors.with_opacity(0.5, ft.colors.BLACK),
+            max_y=100,
+            expand=True,
+            bgcolor=ft.colors.GREY_700
+        )
+
+        chart2 = ft.BarChart(
+            bar_groups=[
+                ft.BarChartGroup(
+                    x=0,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=40,
+                            width=40,
+                            color=ft.colors.AMBER,
+                            tooltip="Apple",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+                ft.BarChartGroup(
+                    x=1,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=100,
+                            width=40,
+                            color=ft.colors.BLUE,
+                            tooltip="Blueberry",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+                ft.BarChartGroup(
+                    x=2,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=30,
+                            width=40,
+                            color=ft.colors.RED,
+                            tooltip="Cherry",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+                ft.BarChartGroup(
+                    x=3,
+                    bar_rods=[
+                        ft.BarChartRod(
+                            from_y=0,
+                            to_y=60,
+                            width=40,
+                            color=ft.colors.ORANGE,
+                            tooltip="Orange",
+                            border_radius=0,
+                        ),
+                    ],
+                ),
+            ],
+            border=ft.border.all(1, ft.colors.BLACK),
+            left_axis=ft.ChartAxis(
+                labels_size=40, title=ft.Text("Цена Авито"), title_size=40
+            ),
+            bottom_axis=ft.ChartAxis(
+                labels=[
+                    ft.ChartAxisLabel(
+                        value=0, label=ft.Container(ft.Text("Apple"), padding=10)
+                    ),
+                    ft.ChartAxisLabel(
+                        value=1, label=ft.Container(ft.Text("Blueberry"), padding=10)
+                    ),
+                    ft.ChartAxisLabel(
+                        value=2, label=ft.Container(ft.Text("Cherry"), padding=10)
+                    ),
+                    ft.ChartAxisLabel(
+                        value=3, label=ft.Container(ft.Text("Orange"), padding=10)
+                    ),
+                ],
+                labels_size=40,
+            ),
+            horizontal_grid_lines=ft.ChartGridLines(
+                color=ft.colors.BLACK, width=1, dash_pattern=[3, 3]
+            ),
+            tooltip_bgcolor=ft.colors.with_opacity(0.5, ft.colors.BLACK),
+            max_y=100,
+            expand=True,
+            bgcolor=ft.colors.GREY_700,
+        )
+
         ### BUTTONS ###
         parser_button = ft.FilledButton(text='Главная страница', width=170, height=32, on_click=mainpage)
 
@@ -141,19 +261,8 @@ class Analyse:
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
             ft.Row([
-                ft.Container(
-                    border_radius=10,
-                    expand=True,
-                    content=ft.Text('тут короче диаграмма будет'),
-                    shadow=ft.BoxShadow(
-                        spread_radius=1,
-                        blur_radius=15,
-                        color=ft.colors.BLUE_GREY_300,
-                        offset=ft.Offset(0, 0),
-                        blur_style=ft.ShadowBlurStyle.OUTER,
-                    )
-                ),
-                ]),
+                chart, chart2
+            ]),
             ft.Row([
                 self.__table,
             ],
