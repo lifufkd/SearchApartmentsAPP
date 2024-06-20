@@ -45,7 +45,8 @@ class DB:
             price TEXT,
             date TEXT,
             source TEXT,
-            comments TEXT
+            comments TEXT,
+            appartaments_type TEXT
             )
             ''')
             self.__db.commit()

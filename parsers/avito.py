@@ -15,17 +15,14 @@ from modules.CRUD import CRUD
 
 
 class Avito:
-    def __init__(self, db, config):
+    def __init__(self, db, config, type):
         super(Avito, self).__init__()
         self.__driver = None
         self.__crud = CRUD(db)
         self.__config = config
+        self.__paths = None
+        self.__type = type
         self.__threads_drivers = list()
-        self.__static_routes = ['/html/body/div[1]/div/div[3]/div[1]/div/div[2]/div[3]/div[1]/div[2]/div[2]/div/div[2]'
-                                '/div[1]/div', 'params-paramsList-_awNW', '/html/body/div[1]/div/div[3]/div[1]/div/div[2]'
-                                                                     '/div[3]/div[2]/div[1]/div/div/div[1]/div/div[1]'
-                                                                     '/div/div[1]/div/span/span/span[1]',
-                                'style-item-footer-text-LEjEe']
         self.__months = {
                         1: "Января",
                         2: "Февраля",
@@ -40,6 +37,36 @@ class Avito:
                         11: "Ноября",
                         12: "Декабря"
                     }
+        self.__appartaments_type = [
+            [
+                "https://www.avito.ru/all/kvartiry/prodam-ASgBAgICAUSSA8YQ?context=H4sIAAAAAAAA_0q0MrSqLraysFJKK8rPDUhMT1WyLrYyt1JKTixJzMlPV7KuBQQAAP__dhSE3CMAAAA",
+                "iva-item-body-KLUuy",
+                'div#app > div > div:nth-of-type(6) > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > span',
+                'params-paramsList-_awNW',
+                'div#app > div > div:nth-of-type(6) > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div > div > div > div > div > div > div > div > div > span > span > span',
+                'style-item-footer-text-LEjEe',
+                "Купить"
+            ],
+            [
+                "https://www.avito.ru/all/kvartiry/sdam/na_dlitelnyy_srok-ASgBAgICAkSSA8gQ8AeQUg?cd=1&context=H4sIAAAAAAAA_0q0MrSqLraysFJKK8rPDUhMT1WyLrYyt1JKTixJzMlPV7KuBQQAAP__dhSE3CMAAAA",
+                "iva-item-content-rejJg",
+                "div#app > div > div:nth-of-type(6) > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > span",
+                "params-paramsList-_awNW",
+                "div#app > div > div:nth-of-type(6) > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div > div > div > div > div > div > div > div > div > span > span > span",
+                "style-item-footer-text-LEjEe",
+                "Снять"
+
+            ],
+            [
+                "https://www.avito.ru/all/doma_dachi_kottedzhi/prodam-ASgBAgICAUSUA9AQ?cd=1&context=H4sIAAAAAAAA_0q0MrSqLraysFJKK8rPDUhMT1WyLrYyt1JKTixJzMlPV7KuBQQAAP__dhSE3CMAAAA",
+                "iva-item-content-rejJg",
+                "div#app > div > div:nth-of-type(6) > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div > div:nth-of-type(2) > div:nth-of-type(2) > div > div:nth-of-type(2) > div > div > span",
+                "params-paramsList-_awNW",
+                "div#app > div > div:nth-of-type(6) > div > div > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div > div > div > div > div > div > div > div > div > span > span > span",
+                "style-item-footer-text-LEjEe",
+                "Загородное_жильё"
+            ]
+        ]
         #запускаем парсер init()
         self.init()
 
@@ -56,10 +83,17 @@ class Avito:
 
     def init(self):
         #создаём объект хром драйвера
-        self.__driver = Driver(ad_block_on=True, uc=True, headless=True)
+        self.__driver = Driver(ad_block_on=True, uc=True)
         # заранее создаём объекты браузеров для потоков
         for i in range(self.__config.get_config()['threads_count']):
-            self.__threads_drivers.append(Driver(ad_block_on=True, uc=True, headless=True))
+            self.__threads_drivers.append(Driver(ad_block_on=True, uc=True))
+        match self.__type:
+            case "Купить":
+                self.__paths = self.__appartaments_type[0]
+            case "Снять":
+                self.__paths = self.__appartaments_type[1]
+            case "Загородное_жильё":
+                self.__paths = self.__appartaments_type[2]
         self.links_parser()
 
     def page_parse(self, link, driver_index):
@@ -68,15 +102,18 @@ class Avito:
         driver_page = self.__threads_drivers[driver_index]
         driver_page.get(link)
         time.sleep(3)
-        for index, i in enumerate(self.__static_routes):
+        for index, i in enumerate(self.__paths[2:-1]):
             try:
                 if index == 1:
                     page_data = driver_page.find_element(By.CLASS_NAME, i).text
                 elif index == 3:
                     page_data = driver_page.find_element(By.CLASS_NAME, i).find_elements(By.TAG_NAME, 'span')[1].text
-                else:
-                    page_data = driver_page.find_element(By.XPATH, i).text
+                elif index == 0:
+                    page_data = driver_page.find_element(By.CSS_SELECTOR, i).text
+                elif index == 2:
+                    page_data = driver_page.find_element(By.CSS_SELECTOR, i).text
             except Exception as e:
+                print(index)
                 print(e)
                 if index == 1:
                     for k in range(3):
@@ -113,9 +150,10 @@ class Avito:
                     else:
                         data.append(page_data[2:])
         data.append('Авито')
+        print(data)
         # Проверяем отсутствие ошибки
         if len(set(data)) > 3:
-            self.__crud.add_apartment(data)
+            self.__crud.add_apartment(data, self.__paths[-1])
 
     def links_parser(self):
         c = 1
@@ -125,12 +163,13 @@ class Avito:
             index = 0
             threads = list()
             self.__driver.get(
-                f'https://www.avito.ru/all/kvartiry?context=H4sIAAAAAAAA_0q0MrSqLraysFJKK8rPDUhMT1WyLrYyt1JKTixJzMlPV7KuBQQAAP__dhSE3CMAAAA&p={c}')
-            cards = self.__driver.find_elements(By.CLASS_NAME, 'iva-item-body-KLUuy')
+                f'{self.__paths[0]}&p={c}')
+            cards = self.__driver.find_elements(By.CLASS_NAME, self.__paths[1])
             links_app = list()
             for i in cards:
                 links = i.find_elements(By.TAG_NAME, 'a')
                 links_app.append(links[0].get_attribute('href'))
+            print(links_app)
             while True:
                 if len(links_app[index:]) > self.__config.get_config()['threads_count']:
                     for link in range(self.__config.get_config()['threads_count']):

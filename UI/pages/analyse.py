@@ -97,25 +97,25 @@ class Analyse:
 
         ### CHART ###
 
-        def load_chart_info(flag, restrictions=None):
-            if not flag:
-                data = self.__crud.get_basic_query()
-            else:
-                data = self.__crud.get_restricted_query(restrictions)
-            for row in data:
-                self.__chart(ft.BarChartGroup(
-                    x=row[0],
-                    bar_rods=[
-                        ft.BarChartRod(
-                            from_y=0,
-                            to_y=40,
-                            width=40,
-                            color=ft.colors.AMBER,
-                            tooltip=row[2],
-                            border_radius=0,
-                        ),
-                    ]
-                ))
+        # def load_chart_info(flag, restrictions=None):
+        #     if not flag:
+        #         data = self.__crud.get_basic_query()
+        #     else:
+        #         data = self.__crud.get_restricted_query(restrictions)
+        #     for row in data:
+        #         self.__chart(ft.BarChartGroup(
+        #             x=row[0],
+        #             bar_rods=[
+        #                 ft.BarChartRod(
+        #                     from_y=0,
+        #                     to_y=40,
+        #                     width=40,
+        #                     color=ft.colors.AMBER,
+        #                     tooltip=row[2],
+        #                     border_radius=0,
+        #                 ),
+        #             ]
+        #         ))
 
         self.__chart = ft.BarChart(
             bar_groups=[],
@@ -149,7 +149,7 @@ class Analyse:
             bgcolor=ft.colors.GREY_700
         )
 
-        load_chart_info(False)
+        # load_chart_info(False)
 
         self.__chart2 = ft.BarChart(
             bar_groups=[

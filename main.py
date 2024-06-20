@@ -10,6 +10,7 @@ from modules.db import DB
 from UI.visual_draw import UI
 from modules.config_parser import ConfigParser
 from parsers.avito import Avito
+from parsers.cian import Cian
 ############static variables#####################
 config_name = 'secrets.json'
 #################################################
@@ -18,7 +19,12 @@ config_name = 'secrets.json'
 #парсинг данных о квартирах в случае установленного флага в конфиге
 def updater():
     if config.get_config()['update_apartments']:
-        threading.Thread(target=Avito, args=(db, config)).start()
+        # threading.Thread(target=Avito, args=(db, config, "Купить")).start()
+        threading.Thread(target=Avito, args=(db, config, "Снять")).start()
+        # threading.Thread(target=Avito, args=(db, config, "Загородное_жильё")).start()
+        # threading.Thread(target=Cian, args=(db, config, "Купить")).start()
+        # threading.Thread(target=Cian, args=(db, config, "Загородное_жильё")).start()
+        # threading.Thread(target=Cian, args=(db, config, "Загородное_жильё")).start()
 
 
 if __name__ == '__main__':
@@ -26,5 +32,5 @@ if __name__ == '__main__':
     config = ConfigParser(config_name)
     db = DB(config.get_config()['db_path'])
     updater()
-    ui = UI(config.get_config(), db)
-    ft.app(target=ui.main, port=999, assets_dir=work_dir, view=ft.AppView.WEB_BROWSER)
+    # ui = UI(config.get_config(), db)
+    # ft.app(target=ui.main, port=999, assets_dir=work_dir, view=ft.AppView.WEB_BROWSER)

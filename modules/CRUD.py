@@ -15,9 +15,8 @@ class CRUD:
         super(CRUD, self).__init__()
         self.__db = db
 
-    def add_apartment(self, data):
-        print(data)
-        self.__db.db_write(f'INSERT INTO appartaments (link, address, floor, square, rooms, price, date, source, comments) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "{json.dumps([])}")', data)
+    def add_apartment(self, data, appartaments_type):
+        self.__db.db_write(f'INSERT INTO appartaments (link, address, floor, square, rooms, price, date, source, comments, appartaments_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, "{json.dumps([])}", "{appartaments_type}")', data)
 
     def get_existed_apartment(self, url):
         data = self.__db.db_read('SELECT COUNT(*) FROM appartaments WHERE link = ?', (url, ))[0][0]
