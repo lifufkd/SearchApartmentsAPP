@@ -131,6 +131,8 @@ class Analyse:
             for index, datas in enumerate(data):
                 try:
                     price = int(datas[6].replace('от ', '').replace('₽', '').replace(' ', ''))
+                    if price > 100000:
+                        price = 100000
                     self.__chart.bar_groups.append(
                         ft.BarChartGroup(
                             x=index,
@@ -173,7 +175,7 @@ class Analyse:
                 color=ft.colors.BLACK, width=1, dash_pattern=[3, 3]
             ),
             tooltip_bgcolor=ft.colors.with_opacity(0.5, ft.colors.BLACK),
-            max_y=99999,
+            max_y=120000,
             expand=True,
             bgcolor=ft.colors.GREY_700
         )
