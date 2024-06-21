@@ -83,9 +83,9 @@ class MainPage:
 
         def load_table_info(flag, restrictions=None):
             if not flag:
-                data = self.__crud.get_basic_query()
+                data = self.__crud.get_all_datas(50, "Купить")
             else:
-                data = self.__crud.get_restricted_query(restrictions)
+                data = self.__crud.get_restricted_query(restrictions, "Купить", 50)
             for row in data:
                 self.__table.rows.append(ft.DataRow(
                     cells=[

@@ -35,27 +35,34 @@ class CRUD:
     def add_user(self, data):
         self.__db.db_write('INSERT INTO users (name, lastname, email, login, password) VALUES (?, ?, ?, ?, ?)', data)
 
-    def get_basic_query(self):
-        return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments LIMIT 10', ())
+    def get_basic_query(self, appartaments_type):
+        return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE appartaments_type = ? LIMIT 100', (appartaments_type, ))
 
-    def get_all_datas(self):
+    def get_all_datas(self, limit, appartaments_type=None):
         out = list()
-        data1 = self.get_cian_datas()
-        data2 = self.get_avito_datas()
+        data1 = self.get_cian_datas(limit, appartaments_type)
+        data2 = self.get_avito_datas(limit, appartaments_type)
         out.extend(data1)
         out.extend(data2)
         return out
 
-    def get_cian_datas(self):
-        return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Циан" LIMIT 5', ())
+    def get_cian_datas(self, limit, appartaments_type):
+        if appartaments_type is not None:
+            return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Циан" AND appartaments_type = ? LIMIT ?', (appartaments_type, limit))
+        else:
+            return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Циан" LIMIT ?', (limit, ))
 
-    def get_avito_datas(self):
-        return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Авито" LIMIT 5', ())
+    def get_avito_datas(self, limit, appartaments_type):
+        if appartaments_type is not None:
+            return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Авито" AND appartaments_type = ? LIMIT ?', (appartaments_type, limit))
+        else:
+            return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Авито" LIMIT ?', (limit, ))
 
-    def get_restricted_query(self, restrictions):
+
+    def get_restricted_query(self, restrictions, appartaments_type, limit):
         print(restrictions)
         apartments = self.__db.db_read(
-            'SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments', ())
+            'SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE appartaments_type = ? LIMIT ?', (appartaments_type, limit))
         for index, rests in enumerate(restrictions):
             if rests:
                 temp = list()

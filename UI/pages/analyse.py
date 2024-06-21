@@ -38,7 +38,8 @@ class Analyse:
             return price + (random_price * selection_operation)
 
         def prognoze_cost_week(e):
-            database = self.__crud.get_basic_query()
+            database = self.__crud.get_all_datas(5)
+            self.__table.rows.clear()
             for row in database:
                 try:
                     price = int(row[6].replace('от ', '').replace('₽', '').replace(' ', ''))
@@ -57,7 +58,8 @@ class Analyse:
             pg.page.update()
 
         def prognoze_cost_month(e):
-            database = self.__crud.get_basic_query()
+            database = self.__crud.get_all_datas(5)
+            self.__table.rows.clear()
             for row in database:
                 try:
                     price = int(row[6].replace('от ', '').replace('₽', '').replace(' ', ''))
@@ -76,7 +78,8 @@ class Analyse:
             pg.page.update()
 
         def prognoze_cost_year(e):
-            database = self.__crud.get_basic_query()
+            database = self.__crud.get_all_datas(5)
+            self.__table.rows.clear()
             for row in database:
                 try:
                     price = int(row[6].replace('от ', '').replace('₽', '').replace(' ', ''))
@@ -96,7 +99,7 @@ class Analyse:
 
         def load_table_info(flag, restrictions=None):
             if not flag:
-                data = self.__crud.get_all_datas()
+                data = self.__crud.get_all_datas(10)
             else:
                 data = self.__crud.get_restricted_query(restrictions)
             for row in data:
@@ -125,7 +128,7 @@ class Analyse:
         load_table_info(False)
 
         def load_chart_info_avito():
-            data = self.__crud.get_avito_datas()
+            data = self.__crud.get_avito_datas(10, None)
             self.__chart.bar_groups.clear()
             x_labels = []
             for index, datas in enumerate(data):
@@ -162,7 +165,7 @@ class Analyse:
             pg.page.update()
 
         def load_chart_info_cian():
-            data = self.__crud.get_cian_datas()
+            data = self.__crud.get_cian_datas(10, None)
             self.__chart2.bar_groups.clear()
             x_labels = []
             for index, datas in enumerate(data):
