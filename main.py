@@ -19,12 +19,12 @@ config_name = 'secrets.json'
 #парсинг данных о квартирах в случае установленного флага в конфиге
 def updater():
     if config.get_config()['update_apartments']:
-        # threading.Thread(target=Avito, args=(db, config, "Купить")).start()
+        threading.Thread(target=Avito, args=(db, config, "Купить")).start()
         threading.Thread(target=Avito, args=(db, config, "Снять")).start()
-        # threading.Thread(target=Avito, args=(db, config, "Загородное_жильё")).start()
-        # threading.Thread(target=Cian, args=(db, config, "Купить")).start()
-        # threading.Thread(target=Cian, args=(db, config, "Загородное_жильё")).start()
-        # threading.Thread(target=Cian, args=(db, config, "Загородное_жильё")).start()
+        threading.Thread(target=Avito, args=(db, config, "Загородное_жильё")).start()
+        threading.Thread(target=Cian, args=(db, config, "Купить")).start()
+        threading.Thread(target=Cian, args=(db, config, "Загородное_жильё")).start()
+        threading.Thread(target=Cian, args=(db, config, "Загородное_жильё")).start()
 
 
 if __name__ == '__main__':
