@@ -38,6 +38,20 @@ class CRUD:
     def get_basic_query(self):
         return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments LIMIT 10', ())
 
+    def get_all_datas(self):
+        out = list()
+        data1 = self.get_cian_datas()
+        data2 = self.get_avito_datas()
+        out.extend(data1)
+        out.extend(data2)
+        return out
+
+    def get_cian_datas(self):
+        return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Циан" LIMIT 5', ())
+
+    def get_avito_datas(self):
+        return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Авито" LIMIT 5', ())
+
     def get_restricted_query(self, restrictions):
         print(restrictions)
         apartments = self.__db.db_read(
