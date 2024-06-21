@@ -32,5 +32,5 @@ if __name__ == '__main__':
     config = ConfigParser(config_name)
     db = DB(config.get_config()['db_path'])
     updater()
-    # ui = UI(config.get_config(), db)
-    # ft.app(target=ui.main, port=999, assets_dir=work_dir, view=ft.AppView.WEB_BROWSER)
+    ui = UI(config.get_config(), db)
+    ft.app(target=ui.main, port=999, assets_dir=work_dir, view=ft.AppView.WEB_BROWSER)

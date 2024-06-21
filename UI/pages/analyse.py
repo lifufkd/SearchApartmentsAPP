@@ -96,7 +96,7 @@ class Analyse:
 
         def load_table_info(flag, restrictions=None):
             if not flag:
-                data = self.__crud.get_basic_query()
+                data = self.__crud.get_all_datas()
             else:
                 data = self.__crud.get_restricted_query(restrictions)
             for row in data:
@@ -124,8 +124,8 @@ class Analyse:
         )
         load_table_info(False)
 
-        def load_chart_info():
-            data = self.__crud.get_basic_query()
+        def load_chart_info_avito():
+            data = self.__crud.get_avito_datas()
             self.__chart.bar_groups.clear()
             x_labels = []
             for index, datas in enumerate(data):
@@ -161,6 +161,43 @@ class Analyse:
 
             pg.page.update()
 
+        def load_chart_info_cian():
+            data = self.__crud.get_cian_datas()
+            self.__chart2.bar_groups.clear()
+            x_labels = []
+            for index, datas in enumerate(data):
+                try:
+                    price = int(datas[6].replace('от ', '').replace('₽', '').replace(' ', ''))
+                    if price > 100000:
+                        price = 100000
+                    self.__chart2.bar_groups.append(
+                        ft.BarChartGroup(
+                            x=index,
+                            bar_rods=[
+                                ft.BarChartRod(
+                                    from_y=0,
+                                    to_y=price,
+                                    width=40,
+                                    color=ft.colors.AMBER,
+                                    tooltip=datas[2],
+                                    border_radius=0,
+                                ),
+                            ]
+                        )
+                    )
+                    x_labels.append(ft.ChartAxisLabel(
+                        value=index, label=ft.Container(ft.Text("Квартира"), padding=5)
+                    ))
+                except ValueError:
+                    continue
+
+            self.__chart2.bottom_axis = ft.ChartAxis(
+                labels=x_labels,
+                labels_size=40,
+            )
+
+            pg.page.update()
+
         self.__chart = ft.BarChart(
             bar_groups=[],
             border=ft.border.all(1, ft.colors.BLACK),
@@ -180,92 +217,28 @@ class Analyse:
             bgcolor=ft.colors.GREY_700
         )
 
-        load_chart_info()
+        load_chart_info_avito()
 
         self.__chart2 = ft.BarChart(
-            bar_groups=[
-                ft.BarChartGroup(
-                    x=0,
-                    bar_rods=[
-                        ft.BarChartRod(
-                            from_y=0,
-                            to_y=40,
-                            width=40,
-                            color=ft.colors.AMBER,
-                            tooltip="Apple",
-                            border_radius=0,
-                        ),
-                    ],
-                ),
-                ft.BarChartGroup(
-                    x=1,
-                    bar_rods=[
-                        ft.BarChartRod(
-                            from_y=0,
-                            to_y=100,
-                            width=40,
-                            color=ft.colors.BLUE,
-                            tooltip="Blueberry",
-                            border_radius=0,
-                        ),
-                    ],
-                ),
-                ft.BarChartGroup(
-                    x=2,
-                    bar_rods=[
-                        ft.BarChartRod(
-                            from_y=0,
-                            to_y=30,
-                            width=40,
-                            color=ft.colors.RED,
-                            tooltip="Cherry",
-                            border_radius=0,
-                        ),
-                    ],
-                ),
-                ft.BarChartGroup(
-                    x=3,
-                    bar_rods=[
-                        ft.BarChartRod(
-                            from_y=0,
-                            to_y=60,
-                            width=40,
-                            color=ft.colors.ORANGE,
-                            tooltip="Orange",
-                            border_radius=0,
-                        ),
-                    ],
-                ),
-            ],
+            bar_groups=[],
             border=ft.border.all(1, ft.colors.BLACK),
             left_axis=ft.ChartAxis(
                 labels_size=40, title=ft.Text("Цена Циан"), title_size=40
             ),
             bottom_axis=ft.ChartAxis(
-                labels=[
-                    ft.ChartAxisLabel(
-                        value=0, label=ft.Container(ft.Text("Apple"), padding=10)
-                    ),
-                    ft.ChartAxisLabel(
-                        value=1, label=ft.Container(ft.Text("Blueberry"), padding=10)
-                    ),
-                    ft.ChartAxisLabel(
-                        value=2, label=ft.Container(ft.Text("Cherry"), padding=10)
-                    ),
-                    ft.ChartAxisLabel(
-                        value=3, label=ft.Container(ft.Text("Orange"), padding=10)
-                    ),
-                ],
+                labels=[],
                 labels_size=40,
             ),
             horizontal_grid_lines=ft.ChartGridLines(
                 color=ft.colors.BLACK, width=1, dash_pattern=[3, 3]
             ),
             tooltip_bgcolor=ft.colors.with_opacity(0.5, ft.colors.BLACK),
-            max_y=100,
+            max_y=120000,
             expand=True,
-            bgcolor=ft.colors.GREY_700,
+            bgcolor=ft.colors.GREY_700
         )
+
+        load_chart_info_cian()
 
         parser_button = ft.FilledButton(text='Главная страница', width=170, height=32, on_click=mainpage)
         analys_button = ft.FilledButton(text='Анализ по агрегаторам', width=230, height=32, on_click=analyse_function)
