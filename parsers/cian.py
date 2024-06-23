@@ -23,6 +23,24 @@ def get_date():
     return date.strftime("%Y-%m-%d %H:%M")
 
 
+def convert_date_format(date_str):
+    months = {
+        1: 'января', 2: 'февраля', 3: 'марта', 4: 'апреля',
+        5: 'мая', 6: 'июня', 7: 'июля', 8: 'августа',
+        9: 'сентября', 10: 'октября', 11: 'ноября', 12: 'декабря'
+    }
+    # Преобразование строки в объект datetime
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M')
+
+    # Форматирование даты в нужный формат
+    day = date_obj.day
+    month = months[date_obj.month]
+    formatted_date = f"{day} {month} в {date_obj.strftime('%H:%M')}"
+
+    # Возвращение отформатированной даты
+    return formatted_date
+
+
 class Cian:
     def __init__(self, db, config, type):
         super(Cian, self).__init__()
@@ -50,8 +68,8 @@ class Cian:
             if self.__crud.get_existed_apartment(i['url']):
                 address = f"{i['location']}, {i['street']}, {i['house_number']}"
                 floor = f'{i["floor"]} из {i["floors_count"]}'
-                date = get_date()
-                temp.extend([i['url'], address, floor, i['total_meters'], i['rooms_count'], i[self.__current_parameters[0]], date, 'Циан'])
+                date = convert_date_format(get_date())
+                temp.extend([i['url'], address, floor, f'{i["total_meters"]} м²', i['rooms_count'], f'{i[self.__current_parameters[0]]} ₽', date, 'Циан'])
                 # Проверяем отсутствие ошибки
                 if len(set(temp)) > 3:
                     self.__crud.add_apartment(temp, self.__type)
@@ -64,8 +82,8 @@ class Cian:
             temp = list()
             if self.__crud.get_existed_apartment(i['url']):
                 address = f"{i['location']}, {i['street']}, {i['house_number']}"
-                date = get_date()
-                temp.extend([i['url'], address, 0, random.randint(45, 300), random.randint(1, 8), i[self.__current_parameters[0]], date, 'Циан'])
+                date = convert_date_format(get_date())
+                temp.extend([i['url'], address, 0, f'{random.randint(45, 300)} м²', random.randint(1, 8), f'{i[self.__current_parameters[0]]} ₽', date, 'Циан'])
                 # Проверяем отсутствие ошибки
                 if len(set(temp)) > 3:
                     self.__crud.add_apartment(temp, self.__type)

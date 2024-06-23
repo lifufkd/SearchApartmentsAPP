@@ -58,11 +58,9 @@ class CRUD:
         else:
             return self.__db.db_read('SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE source = "Авито" LIMIT ?', (limit, ))
 
-
-    def get_restricted_query(self, restrictions, appartaments_type, limit):
-        print(restrictions)
+    def get_restricted_query(self, restrictions, appartaments_type):
         apartments = self.__db.db_read(
-            'SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE appartaments_type = ? LIMIT ?', (appartaments_type, limit))
+            'SELECT row_id, link, address, floor, square, rooms, price, date, source FROM appartaments WHERE appartaments_type = ?', (appartaments_type, ))
         for index, rests in enumerate(restrictions):
             if rests:
                 temp = list()
@@ -80,7 +78,8 @@ class CRUD:
                     case 3:
                         for i in apartments:
                             try:
-                                square = int(i[4][:i[4].find(' ')])
+                                square = float(i[4][:i[4].find(' ')])
+                                print(square)
                                 if rests == square:
                                     temp.append(i)
                             except:
@@ -89,9 +88,15 @@ class CRUD:
                     case 4:
                         for i in apartments:
                             try:
-                                price = int(i[6][:i[6].find('₽')-1].replace(" ", ""))
-                                if rests == price:
-                                    temp.append(i)
+                                price = float(i[6][:i[6].find('₽') - 1].replace(" ", ""))
+                                if '-' in rests:
+                                    need_price1 = float(rests[:rests.index('-')])
+                                    need_price2 = float(rests[rests.index('-')+1:])
+                                    if need_price1 <= price <= need_price2:
+                                        temp.append(i)
+                                else:
+                                    if float(rests) == price:
+                                        temp.append(i)
                             except:
                                 pass
                         apartments = copy.deepcopy(temp)
@@ -104,7 +109,7 @@ class CRUD:
                             except:
                                 pass
                         apartments = copy.deepcopy(temp)
-        return apartments[:10]
+        return apartments[:50]
 
     def get_comments_by_id(self, row_id):
         return json.loads(self.__db.db_read('SELECT comments FROM appartaments WHERE row_id = ?', (row_id, ))[0][0])

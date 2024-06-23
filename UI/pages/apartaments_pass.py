@@ -21,7 +21,7 @@ class ApartamentsPass:
         self.__crud = CRUD(db)
         self.__comment_place = ft.TextField(label="Напишите комментарий")
         self.__filter_fields = [
-                            ft.TextField(label='Адрес'),
+                            ft.TextField(label='Город'),
                             ft.TextField(label='Площадь'),
                             ft.TextField(label='Цена'),
                             ft.TextField(label='Этаж')
@@ -60,9 +60,9 @@ class ApartamentsPass:
                     dlg_modal.open = False
                 else:
                     if len(input.value) > 0:
-                        if index in [3, 4, 5]:
+                        if index in [3, 5]:
                             try:
-                                restriction.append(int(input.value))
+                                restriction.append(float(input.value))
                             except:
                                 restriction.append(False)
                                 input.value = 'Ошибка! Не числовой формат'
@@ -71,14 +71,17 @@ class ApartamentsPass:
                     else:
                         restriction.append(False)
             self.__table.rows.clear()
-            load_table_info(True, restriction)
+            if len(set(restriction)) == 1:
+                load_table_info(False)
+            else:
+                load_table_info(True, restriction)
             pg.page.update()
 
         def load_table_info(flag, restrictions=None):
             if not flag:
                 data = self.__crud.get_all_datas(50, "Снять")
             else:
-                data = self.__crud.get_restricted_query(restrictions, "Снять", 50)
+                data = self.__crud.get_restricted_query(restrictions, "Снять")
             for row in data:
                 self.__table.rows.append(ft.DataRow(
                     cells=[
@@ -197,7 +200,7 @@ class ApartamentsPass:
             vertical_lines=ft.border.BorderSide(1, "black"),
             horizontal_lines=ft.border.BorderSide(1, "black"),
             columns=[
-                ft.DataColumn(ft.Text("Адрес")),
+                ft.DataColumn(ft.Text("Город")),
                 ft.DataColumn(ft.Text("Этаж"), numeric=True),
                 ft.DataColumn(ft.Text("Площадь"), numeric=True),
                 ft.DataColumn(ft.Text("Комнаты"), numeric=True),

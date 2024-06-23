@@ -78,7 +78,7 @@ class VacationHome:
             if not flag:
                 data = self.__crud.get_all_datas(50, "Загородное_жильё")
             else:
-                data = self.__crud.get_restricted_query(restrictions, "Загородное_жильё", 50)
+                data = self.__crud.get_restricted_query(restrictions, "Загородное_жильё")
             for row in data:
                 self.__table.rows.append(ft.DataRow(
                     cells=[

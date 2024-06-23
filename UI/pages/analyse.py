@@ -1,7 +1,10 @@
 import flet as ft
 from flet_navigator import PageData
 from modules.CRUD import CRUD
-import random
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
 class Analyse:
     def __init__(self, db):
@@ -22,20 +25,27 @@ class Analyse:
         def go_to_site(e):
             pg.page.launch_url(url=e.control.tooltip)
 
+        def prognoze_price(price, weeks_ahead):
+            data = {'week': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    'price': [100000, 101000, 102000, 103000, 104000, 105000, 106000, 107000, 108000, 109000]}
+            df = pd.DataFrame(data)
+            df['price_diff'] = df['price'].diff().fillna(0)
+            X_train, X_test, y_train, y_test = train_test_split(df[['week']], df['price_diff'], test_size=0.2)
+            model = LinearRegression()
+            model.fit(X_train, y_train)
+            predictions = model.predict(X_test)
+            mse = mean_squared_error(y_test, predictions)
+            predicted_increase = model.predict([[len(data['week']) + weeks_ahead]])[0]
+            return price + predicted_increase
+
         def prognoze_price_week(price):
-            random_price = random.randint(2000, 7000)
-            selection_operation = random.choice([1, -1])
-            return price + (random_price * selection_operation)
+            return prognoze_price(price, 1)
 
         def prognoze_price_month(price):
-            random_price = random.randint(7000, 12000)
-            selection_operation = random.choice([1, -1])
-            return price + (random_price * selection_operation)
+            return prognoze_price(price, 4)
 
         def prognoze_price_year(price):
-            random_price = random.randint(12000, 20000)
-            selection_operation = random.choice([1, -1])
-            return price + (random_price * selection_operation)
+            return prognoze_price(price, 52)
 
         def prognoze_cost_week(e):
             database = self.__crud.get_all_datas(5)
@@ -44,6 +54,7 @@ class Analyse:
                 try:
                     price = int(row[6].replace('от ', '').replace('₽', '').replace(' ', ''))
                     new_price = prognoze_price_week(price)
+                    new_price = round(new_price, 2)
                     self.__table.rows.append(ft.DataRow(
                         cells=[
                             ft.DataCell(ft.Text(row[2])),
